@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading compact-heading"><div><p class="eyebrow">CONTACT DETAILS</p><h1>Edit contact</h1><p class="muted">Correct the contact fields used to personalize campaign previews.</p></div><a class="text-link" href="{{ url_for('contacts') }}">← Back to contacts</a></section>
+<section class="panel edit-contact-panel">
+  <div class="locked-email"><span class="stat-icon icon-total">@</span><div><small>EMAIL ADDRESS</small><b>{{ contact.email }}</b><p>Email addresses are kept unchanged here to protect send history.</p></div><span class="status-pill status-{{ contact.status }}"><i></i>{{ contact.status|title }}</span></div>
+  <form method="post" class="contact-edit-form">
+    {% for field, label, limit in [('company','Company',255),('contact_name','Contact name',255),('website','Website',1000),('business_type','Business type',255),('country','Country',120),('phone','Phone',100)] %}
+    <div class="edit-field"><label for="{{ field }}">{{ label }}</label><input id="{{ field }}" name="{{ field }}" maxlength="{{ limit }}" value="{{ values[field] }}" {% if field == 'website' %}placeholder="https://example.com"{% endif %}></div>
+    {% endfor %}
+    <div class="form-actions"><a class="button button-secondary" href="{{ url_for('contacts') }}">Cancel</a><button class="button" type="submit">Save contact</button></div>
+  </form>
+</section>
+{% endblock %}

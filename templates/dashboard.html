@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">WORKSPACE OVERVIEW</p><h1>Good work starts with a clear view.</h1><p class="muted">Track your contacts and review campaign progress.</p></div>
+  <div class="heading-actions"><a class="button button-secondary" href="{{ url_for('import_excel') }}">Import contacts</a><a class="button" href="{{ url_for('compose') }}">Create campaign <span aria-hidden="true">＋</span></a></div>
+</section>
+<section class="stats-grid" aria-label="Contact totals">
+  <a class="stat-card" href="{{ url_for('contacts') }}"><span class="stat-icon icon-total">◎</span><span class="stat-label">All contacts</span><strong>{{ total }}</strong><span class="stat-foot">In your workspace</span></a>
+  <a class="stat-card" href="{{ url_for('contacts', status='pending') }}"><span class="stat-icon icon-pending">◷</span><span class="stat-label">Ready to send</span><strong>{{ pending }}</strong><span class="stat-foot">Pending review</span></a>
+  <a class="stat-card" href="{{ url_for('contacts', status='sent') }}"><span class="stat-icon icon-sent">✓</span><span class="stat-label">Sent</span><strong>{{ sent }}</strong><span class="stat-foot">Accepted by SMTP</span></a>
+  <a class="stat-card" href="{{ url_for('contacts', status='failed') }}"><span class="stat-icon icon-failed">!</span><span class="stat-label">Needs attention</span><strong>{{ failed }}</strong><span class="stat-foot">Failed delivery attempts</span></a>
+  <a class="stat-card" href="{{ url_for('contacts', status='suppressed') }}"><span class="stat-icon icon-suppressed">⊘</span><span class="stat-label">Suppressed</span><strong>{{ suppressed }}</strong><span class="stat-foot">Excluded from sending</span></a>
+</section>
+<section class="content-grid">
+  <div class="panel">
+    <div class="panel-heading"><div><p class="eyebrow">RECENT WORK</p><h2>Saved campaigns</h2></div><a class="text-link" href="{{ url_for('campaigns') }}">View all <span aria-hidden="true">→</span></a></div>
+    {% if campaigns %}
+    <div class="campaign-list">
+      {% for campaign in campaigns %}
+      <article class="campaign-row"><span class="campaign-icon">✉</span><div class="campaign-info"><h3>{{ campaign.subject }}</h3><p>Created {{ campaign.created_at.strftime('%b %d, %Y') }}</p></div><a class="icon-link" aria-label="Edit {{ campaign.subject }}" href="{{ url_for('compose', campaign_id=campaign.id) }}">Edit</a><a class="icon-link" aria-label="Preview {{ campaign.subject }}" href="{{ url_for('preview', campaign_id=campaign.id) }}">Preview</a></article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state"><span class="empty-icon">✉</span><h3>No campaigns yet</h3><p>Create a reusable message and preview it with your contact data.</p><a class="button button-secondary" href="{{ url_for('compose') }}">Create your first campaign</a></div>
+    {% endif %}
+  </div>
+  <aside class="panel workflow-panel"><p class="eyebrow">YOUR WORKFLOW</p><h2>From list to thoughtful outreach</h2>
+    <ol class="workflow-list"><li><span>1</span><div><b>Import contacts</b><small>Upload a spreadsheet and review matches.</small></div></li><li><span>2</span><div><b>Write a campaign</b><small>Personalize with contact fields.</small></div></li><li><span>3</span><div><b>Preview and send</b><small>Review each message before a controlled batch.</small></div></li></ol>
+    <p class="warning">Only contact people when outreach is lawful and appropriate. Honor opt-outs and keep your suppression list current.</p>
+  </aside>
+</section>
+{% endblock %}

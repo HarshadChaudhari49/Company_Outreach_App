@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading compact-heading"><div><p class="eyebrow">CONTACT DATABASE</p><h1>Contacts</h1><p class="muted">Search people, review delivery status, and manage retries or opt-outs.</p></div><a class="button" href="{{ url_for('import_excel') }}">Import contacts <span aria-hidden="true">＋</span></a></section>
+<section class="panel">
+  <form class="contact-tools" method="get" action="{{ url_for('contacts') }}">
+    <label class="search-box"><span aria-hidden="true">⌕</span><input type="search" name="q" value="{{ q }}" placeholder="Search email, company, or contact" aria-label="Search contacts"></label>
+    <label class="filter-label" for="status-filter">Status</label>
+    <select id="status-filter" name="status">
+      <option value="all" {{ 'selected' if status == 'all' else '' }}>All statuses</option>
+      {% for value, label in [('pending', 'Pending'), ('sent', 'Sent'), ('failed', 'Failed'), ('suppressed', 'Suppressed')] %}
+      <option value="{{ value }}" {{ 'selected' if status == value else '' }}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button class="button" type="submit">Apply</button>
+    {% if q or status != 'all' %}<a class="text-link clear-link" href="{{ url_for('contacts') }}">Clear</a>{% endif %}
+  </form>
+  <div class="table-summary"><span><b>{{ total_rows }}</b> contact{{ '' if total_rows == 1 else 's' }} found</span><a href="{{ url_for('export', q=q, status=status if status != 'all' else '') }}">Export this view as CSV ↓</a></div>
+  {% set visible_failed = contacts|selectattr('status', 'equalto', 'failed')|list %}
+  {% if visible_failed %}<div class="bulk-toolbar"><div><b>Retry selected failures</b><span id="selected-count">Select one or more failed contacts to queue them.</span></div><button class="quiet-button" id="select-failed" type="button">Select visible failures</button><form id="bulk-retry-form" method="post" action="{{ url_for('bulk_retry_contacts') }}" onsubmit="return confirm('Queue the selected failed contacts for review? No emails will be sent yet.')"><button class="button button-small" id="queue-selected" type="submit">Queue selected for retry</button></form></div>{% endif %}
+  {% if contacts %}
+  <div class="table-scroll"><table class="contacts-table">
+    <thead><tr><th>Select</th><th>Contact</th><th>Company</th><th>Website</th><th>Status</th><th>Last attempt detail</th><th class="actions-col">Actions</th></tr></thead>
+    <tbody>{% for c in contacts %}
+    <tr>
+      <td>{% if c.status == 'failed' %}<input class="contact-select" type="checkbox" form="bulk-retry-form" name="contact_ids" value="{{ c.id }}" aria-label="Select {{ c.email }} for retry">{% else %}—{% endif %}</td>
+      <td><div class="contact-email">{{ c.email }}</div>{% if c.contact_name %}<div class="contact-subtitle">{{ c.contact_name }}</div>{% endif %}</td>
+      <td>{{ c.company or '—' }}</td><td>{% if c.website %}<a class="website-link" href="https://{{ c.website|replace('https://', '')|replace('http://', '') }}" target="_blank" rel="noopener">{{ c.website }}</a>{% else %}—{% endif %}</td>
+      <td><span class="status-pill status-{{ c.status }}"><i></i>{{ c.status|title }}</span></td>
+      <td class="error-cell">{{ c.last_error if c.status == 'failed' and c.last_error else '—' }}</td>
+      <td class="row-actions">
+        <a class="quiet-button" href="{{ url_for('edit_contact', contact_id=c.id) }}">Edit</a>
+        {% if c.status == 'failed' %}<form method="post" action="{{ url_for('retry_contact', contact_id=c.id) }}"><button class="button button-small button-secondary" type="submit">Queue retry</button></form>{% endif %}
+        {% if c.status != 'suppressed' %}<form method="post" action="{{ url_for('suppress') }}" onsubmit="return confirm('Suppress {{ c.email }} from future sends?')"><input type="hidden" name="email" value="{{ c.email }}"><button class="quiet-button" type="submit">Suppress</button></form>{% endif %}
+      </td>
+    </tr>
+    {% endfor %}</tbody>
+  </table></div>
+  {% else %}<div class="empty-state"><span class="empty-icon">⌕</span><h3>No contacts match</h3><p>Try another search or clear the current filters.</p><a class="button button-secondary" href="{{ url_for('contacts') }}">Show all contacts</a></div>{% endif %}
+  {% if pages > 1 %}<nav class="pagination" aria-label="Contact pages">
+    {% if page > 1 %}<a href="{{ url_for('contacts', q=q, status=status, page=page-1) }}">← Previous</a>{% else %}<span class="disabled">← Previous</span>{% endif %}
+    <span>Page <b>{{ page }}</b> of {{ pages }}</span>
+    {% if page < pages %}<a href="{{ url_for('contacts', q=q, status=status, page=page+1) }}">Next →</a>{% else %}<span class="disabled">Next →</span>{% endif %}
+  </nav>{% endif %}
+</section>
+{% if visible_failed %}<script>
+const checks = Array.from(document.querySelectorAll('.contact-select'));
+const queueButton = document.getElementById('queue-selected');
+const selectedLabel = document.getElementById('selected-count');
+function updateSelection(){const selected=checks.filter(item=>item.checked).length;queueButton.disabled=selected===0;selectedLabel.textContent=selected?`${selected} selected`:'Select one or more failed contacts to queue them.';}
+document.getElementById('select-failed').addEventListener('click',()=>{const allChecked=checks.every(item=>item.checked);checks.forEach(item=>item.checked=!allChecked);updateSelection();});
+checks.forEach(item=>item.addEventListener('change',updateSelection));
+updateSelection();
+</script>{% endif %}
+{% endblock %}

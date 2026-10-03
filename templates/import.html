@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading compact-heading"><div><p class="eyebrow">CONTACT INTAKE</p><h1>Import a spreadsheet</h1><p class="muted">Add contacts from an Excel workbook. Existing and suppressed addresses are skipped.</p></div></section>
+<section class="import-layout">
+  <div class="panel upload-panel"><span class="upload-icon">↑</span><h2>Upload contact file</h2><p>Choose an Excel workbook in <b>.xlsx</b> or <b>.xlsm</b> format.</p>
+    <form method="post" enctype="multipart/form-data"><label class="file-drop" for="contact-file"><span>Choose a spreadsheet</span><small id="file-name">No file selected</small></label><input class="file-input" id="contact-file" type="file" name="file" accept=".xlsx,.xlsm" required><button class="button" type="submit">Import contacts <span aria-hidden="true">→</span></button></form>
+  </div>
+  <aside class="panel import-guide"><p class="eyebrow">COLUMN GUIDE</p><h2>Recognized headings</h2><p>Column names are matched without regard to capitalization.</p><div class="column-list"><span>Email</span><code>emailid1</code><code>email</code><span>Company</span><code>clientname</code><code>company</code><span>Contact name</span><code>contact_name</code><code>firstname</code><span>Website</span><code>url</code><code>website</code><span>Other</span><code>bussinesstype</code><code>country</code><code>phoneormobile</code></div><div class="tip-box"><b>What gets skipped?</b><p>Invalid email addresses, duplicates, and addresses on the suppression list.</p></div></aside>
+</section>
+<script>document.getElementById('contact-file').addEventListener('change', function(){document.getElementById('file-name').textContent=this.files.length ? this.files[0].name : 'No file selected';});</script>
+{% endblock %}

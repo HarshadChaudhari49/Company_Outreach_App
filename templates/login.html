@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="panel narrow login-card">
+  <div class="login-brand"><span class="brand-mark">C</span><div><b>Company Outreach</b><small>Private workspace</small></div></div>
+  <h1>Welcome back</h1><p>Sign in to manage contacts and campaigns.</p>
+  <form method="post"><label for="username">Username</label><input id="username" name="username" autocomplete="username" required><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required><button class="button" type="submit">Sign in <span aria-hidden="true">→</span></button></form>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+# Local secrets
+.env
+.env.*
+# Keep the safe sample configuration tracked.
+!.env.example
+
+# Python environments and bytecode
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local application data and generated test databases
+instance/
+*.db
+*.sqlite
+*.sqlite3
+outreach_e2e_*/
+uploads/
+.uploads/
+
+# Logs and test/tool caches
+*.log
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini

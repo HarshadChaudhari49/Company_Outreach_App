@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading compact-heading"><div><p class="eyebrow">CAMPAIGN EDITOR</p><h1>{{ 'Edit campaign' if campaign else 'Create a campaign' }}</h1><p class="muted">Write once, then preview with real contact details before sending.</p></div><a class="text-link" href="{{ url_for('campaigns') }}">← Campaign library</a></section>
+<form class="editor-layout" method="post">
+  {% if campaign %}<input type="hidden" name="campaign_id" value="{{ campaign.id }}">{% endif %}
+  <section class="panel editor-panel">
+    <label for="subject">Email subject</label>
+    <input id="subject" name="subject" maxlength="500" value="{{ campaign.subject if campaign else 'A website idea for {{company}}' }}" placeholder="A clear, specific subject" required>
+    <div class="label-row"><label for="body">Message</label><span class="muted">Plain text</span></div>
+    <textarea id="body" name="body" rows="18" required>{{ campaign.body if campaign else 'Hello {{contact_name}},
+
+I came across {{company}} and wanted to share a website improvement idea. I noticed {{website}} and thought a clearer, more accessible experience could help visitors find what they need.
+
+If this is relevant, our Computer Engineering team would be glad to share a short concept. If not, no action is needed.
+
+Regards,
+Computer Engineering Team' }}</textarea>
+    <div class="editor-footer"><span class="muted">Save your message, then check the personalized preview.</span><button class="button" type="submit">{{ 'Save changes & preview' if campaign else 'Save campaign & preview' }} <span aria-hidden="true">→</span></button></div>
+  </section>
+  <aside class="panel variable-panel"><p class="eyebrow">PERSONALIZATION</p><h2>Available contact fields</h2><p>Type a variable exactly as shown. Missing values appear empty in the preview.</p>
+    <div class="variable-list"><code>{{ '{{company}}' }}</code><span>Company name</span><code>{{ '{{contact_name}}' }}</code><span>Contact name</span><code>{{ '{{email}}' }}</code><span>Email address</span><code>{{ '{{website}}' }}</code><span>Website</span><code>{{ '{{business_type}}' }}</code><span>Business type</span><code>{{ '{{country}}' }}</code><span>Country</span><code>{{ '{{phone}}' }}</code><span>Phone</span></div>
+    <div class="tip-box"><b>Preview before sending</b><p>Check the subject, greeting, and website fields. A blank field can make a message look unfinished.</p></div>
+  </aside>
+</form>
+{% endblock %}

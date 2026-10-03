@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading compact-heading"><div><p class="eyebrow">MESSAGE LIBRARY</p><h1>Campaigns</h1><p class="muted">Keep reusable messages organized and update them whenever your pitch changes.</p></div><a class="button" href="{{ url_for('compose') }}">New campaign <span aria-hidden="true">＋</span></a></section>
+<section class="panel campaign-library">
+  {% if campaigns %}
+    {% for campaign in campaigns %}
+    <article class="library-row"><div class="library-icon">✉</div><div class="library-copy"><h2>{{ campaign.subject }}</h2><p>Created {{ campaign.created_at.strftime('%b %d, %Y at %I:%M %p') }} <span>·</span> {{ campaign.body|length }} characters</p><p class="snippet">{{ campaign.body|striptags|truncate(180, True) }}</p></div><div class="library-actions"><a class="button button-secondary button-small" href="{{ url_for('compose', campaign_id=campaign.id) }}">Edit</a><a class="button button-small" href="{{ url_for('preview', campaign_id=campaign.id) }}">Preview</a><form method="post" action="{{ url_for('duplicate_campaign', campaign_id=campaign.id) }}"><button class="button button-secondary button-small" type="submit">Duplicate</button></form></div></article>
+    {% endfor %}
+  {% else %}<div class="empty-state"><span class="empty-icon">✉</span><h2>Your campaign library is empty</h2><p>Write a message once and reuse it for future batches.</p><a class="button" href="{{ url_for('compose') }}">Create campaign</a></div>{% endif %}
+</section>
+{% endblock %}
